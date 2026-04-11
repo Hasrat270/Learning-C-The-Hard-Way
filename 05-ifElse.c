@@ -14,4 +14,5 @@ int main(int argc, char *argv[]) {
     } else {
         printf("You have too many arguments. You suck.\n");
     }
+    return 0;
 }
