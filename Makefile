@@ -1,19 +1,29 @@
 CC = gcc
-CFLAGS = -Wall -g
+CFLAGS = -Wall -g -I. -I./05-Debugging_and_Macros -I./13-Safer_Strings -I./11-Lists_and_Algos -I./12-Dynamic_Arrays -I./14-Hashmaps -I./16-Trees -I./19-Ring_Buffer -I./20-Stats_Engine
+LDFLAGS = -lm
 
-SRCS = $(wildcard *.c)
-TARGETS = $(SRCS:.c=)
+# Saare sub-directories
+SUBDIRS = $(wildcard */)
 
+# Saare .c files
+SRCS = $(wildcard $(addsuffix *.c,$(SUBDIRS)))
+
+# Programs (Exclude Files ending with _Library)
+BINS = $(filter-out %_Library, $(SRCS:.c=))
+
+# Rule to compile programs and link with their local Library if exists
 %: %.c
-	$(CC) $(CFLAGS) -o $@ $<
+	@echo "Compiling $@..."
+	$(CC) $(CFLAGS) -o $@ $< $(wildcard $(dir $@)*_Library.c) $(LDFLAGS)
 
-$(TARGETS):
-
-all: $(TARGETS)
+all: $(BINS)
 
 clean:
-	rm -f $(TARGETS)
-.PHONY: all clean
+	@echo "Cleaning up..."
+	find . -type f -executable -not -path '*/.*' -not -name "*.sh" -delete
+
+.PHONY: all clean help
+
 help:
-	@echo "Available Targets:"
-	@echo "$(TARGETS)"
+	@echo "Available Exercises (Standalone & Tests):"
+	@echo "$(sort $(BINS))" | tr ' ' '\n'
